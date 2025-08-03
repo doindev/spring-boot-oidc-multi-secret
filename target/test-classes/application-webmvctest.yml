@@ -1,2 +1,0 @@
-security:
-  type: basic  # Use basic authentication for WebMvcTests to avoid OIDC dependencies
