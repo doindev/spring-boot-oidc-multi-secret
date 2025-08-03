@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ApiController.class)
 @Import({UsernameArgumentResolver.class, WebConfig.class})
+@ActiveProfiles("webmvctest")
 class UsernameArgumentResolverTest {
     
     @Autowired
