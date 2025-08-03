@@ -60,7 +60,16 @@ public class SpaErrorController implements ErrorController {
                 
                 // Always serve the index.html content for 404s
                 // The Angular router will handle the actual routing based on the URL
-                return serveIndexHtml(response);
+                response.setStatus(HttpStatus.OK.value());
+                response.setContentType(MediaType.TEXT_HTML_VALUE);
+                try {
+                    response.getWriter().write(getIndexHtmlContent());
+                    response.getWriter().flush();
+                    return null;
+                } catch (IOException e) {
+                    log.error("Failed to write index.html content", e);
+                    return handleRegular404(response);
+                }
             }
         }
         
@@ -68,13 +77,6 @@ public class SpaErrorController implements ErrorController {
         return handleRegularError(request, response);
     }
     
-    @RequestMapping(value = "/not-found", produces = MediaType.TEXT_HTML_VALUE)
-    @ResponseBody
-    public String handleNotFound(HttpServletRequest request, HttpServletResponse response) {
-        // This endpoint serves the same content as index.html
-        response.setStatus(HttpStatus.OK.value());
-        return getIndexHtmlContent();
-    }
     
     private String getOriginalPath(HttpServletRequest request) {
         String path = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
@@ -95,20 +97,6 @@ public class SpaErrorController implements ErrorController {
         return false;
     }
     
-    private Object serveIndexHtml(HttpServletResponse response) {
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType(MediaType.TEXT_HTML_VALUE);
-        
-        try {
-            response.getWriter().write(getIndexHtmlContent());
-            response.getWriter().flush();
-        } catch (IOException e) {
-            log.error("Failed to write index.html content", e);
-            return handleRegular404(response);
-        }
-        
-        return null;
-    }
     
     private String getIndexHtmlContent() {
         // Cache the index file content for performance
@@ -169,11 +157,8 @@ public class SpaErrorController implements ErrorController {
     
     private ModelAndView handleRegular404(HttpServletResponse response) {
         response.setStatus(HttpStatus.NOT_FOUND.value());
-        ModelAndView mav = new ModelAndView("error/404");
-        mav.addObject("status", 404);
-        mav.addObject("error", "Not Found");
-        mav.addObject("message", "The requested resource was not found");
-        return mav;
+        // Return empty ModelAndView to generate a simple 404 response
+        return new ModelAndView();
     }
     
     private ModelAndView handleRegularError(HttpServletRequest request, HttpServletResponse response) {

@@ -1,0 +1,13 @@
+# Test configuration with custom not-found URL
+spa:
+  enabled: true
+  index-url: spa-index.html
+  not-found-url: /page-not-found?original={notFoundUrl}
+  exclude-patterns:
+    - /api/**
+    - /actuator/**
+    - /**/*.js
+    - /**/*.css
+
+security:
+  type: none
