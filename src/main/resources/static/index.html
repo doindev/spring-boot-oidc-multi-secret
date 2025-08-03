@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPA Demo Application</title>
+    <base href="/">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .route-info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .route-info code {
+            background-color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .links {
+            margin-top: 30px;
+        }
+        .links a {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Single Page Application Demo</h1>
+        
+        <div class="route-info">
+            <h3>Current Route Information:</h3>
+            <p><strong>Path:</strong> <code id="current-path"></code></p>
+            <p><strong>Query Parameters:</strong> <code id="query-params"></code></p>
+            <p><strong>Full URL:</strong> <code id="full-url"></code></p>
+        </div>
+
+        <div id="route-handler">
+            <!-- This is where your Angular/React/Vue router would handle the route -->
+            <p id="route-message">Loading route handler...</p>
+        </div>
+
+        <div class="links">
+            <h3>Test Links:</h3>
+            <a href="/">Home</a>
+            <a href="/products">Products (non-existent)</a>
+            <a href="/about">About (non-existent)</a>
+            <a href="/api/users">API Route (should 404)</a>
+            <a href="/unknown.js">Static Resource (should 404)</a>
+        </div>
+    </div>
+
+    <script>
+        // Parse current location
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const fullUrl = window.location.href;
+        
+        // Display current route info
+        document.getElementById('current-path').textContent = path;
+        document.getElementById('query-params').textContent = search || 'none';
+        document.getElementById('full-url').textContent = fullUrl;
+        
+        // Simple client-side routing logic
+        const routeMessage = document.getElementById('route-message');
+        
+        // Check if we're on the not-found route
+        if (path === '/not-found' || path === '/page-not-found') {
+            const params = new URLSearchParams(search);
+            const originalPage = params.get('page') || params.get('original');
+            
+            if (originalPage) {
+                routeMessage.innerHTML = `
+                    <h3 style="color: #dc3545;">Page Not Found</h3>
+                    <p>The page <code>${originalPage}</code> does not exist.</p>
+                    <p>In a real Angular app, this would be handled by the Angular router's not-found component.</p>
+                `;
+            } else {
+                routeMessage.innerHTML = `
+                    <h3>Not Found Route</h3>
+                    <p>This is the not-found route handler.</p>
+                `;
+            }
+        } else if (path === '/') {
+            routeMessage.innerHTML = `
+                <h3>Welcome to the SPA Demo</h3>
+                <p>This demonstrates how Spring Boot SPA support works with client-side routing.</p>
+                <p>Try clicking the test links above to see how non-existent routes are handled.</p>
+            `;
+        } else {
+            // Any other route - in a real SPA, the router would handle this
+            routeMessage.innerHTML = `
+                <h3>Route: ${path}</h3>
+                <p>In a real SPA, this route would be handled by the client-side router.</p>
+                <p>If this route doesn't exist in the client-side router, it would show a 404 component.</p>
+            `;
+        }
+    </script>
+</body>
+</html>

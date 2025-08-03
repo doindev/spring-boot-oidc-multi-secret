@@ -2,6 +2,7 @@ package com.example.oidc.controller;
 
 import com.example.oidc.config.SpaProperties;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +59,23 @@ public class SpaErrorController implements ErrorController {
                 
                 log.debug("Handling 404 for path: {} with SPA routing", originalPath);
                 
-                // Always serve the index.html content for 404s
-                // The Angular router will handle the actual routing based on the URL
+                // Forward to the configured not-found URL with the original path
+                String notFoundUrl = spaProperties.getNotFoundUrl();
+                if (notFoundUrl != null && !notFoundUrl.isEmpty()) {
+                    // Replace the placeholder with the actual path
+                    String forwardUrl = notFoundUrl.replace("{notFoundUrl}", originalPath);
+                    log.debug("Forwarding to: {}", forwardUrl);
+                    
+                    try {
+                        // Use forward instead of redirect to maintain the original URL in the browser
+                        request.getRequestDispatcher(forwardUrl).forward(request, response);
+                        return null;
+                    } catch (Exception e) {
+                        log.error("Failed to forward to not-found URL: {}", forwardUrl, e);
+                    }
+                }
+                
+                // Fallback: serve index.html directly if forward fails
                 response.setStatus(HttpStatus.OK.value());
                 response.setContentType(MediaType.TEXT_HTML_VALUE);
                 try {

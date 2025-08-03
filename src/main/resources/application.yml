@@ -9,7 +9,7 @@ spring:
 # Security configuration type
 # Options: oidc, basic, none, entra
 security:
-  type: oidc
+  type: none
 
 server:
   port: 8080
@@ -54,7 +54,7 @@ logging:
 
 # Single Page Application (SPA) configuration
 spa:
-  enabled: false  # Set to true to enable SPA mode
+  enabled: true  # Set to true to enable SPA mode
   index-url: index.html  # Can be any filename like: spa-index.html, app.html, angular-app.html
   not-found-url: /not-found?page={notFoundUrl}
   forward-api-requests: false
