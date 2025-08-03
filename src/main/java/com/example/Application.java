@@ -1,12 +1,12 @@
-package com.example.oidc;
+package com.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OidcMultiSecretApplication {
+public class Application {
     
     public static void main(String[] args) {
-        SpringApplication.run(OidcMultiSecretApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
