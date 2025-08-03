@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPA Application</title>
+    <base href="/">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .router-outlet { margin-top: 20px; padding: 20px; border: 1px solid #ddd; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 10px; }
+        .error-page { background-color: #f8d7da; color: #721c24; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Single Page Application Demo</h1>
+        
+        <nav class="nav">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/non-existent-page">404 Test</a>
+        </nav>
+        
+        <div id="router-outlet" class="router-outlet">
+            <!-- Angular would render components here -->
+        </div>
+    </div>
+    
+    <script>
+        // Simplified client-side router to demonstrate the concept
+        class SimpleRouter {
+            constructor() {
+                this.routes = {
+                    '/': this.renderHome,
+                    '/about': this.renderAbout,
+                    '/contact': this.renderContact,
+                    '/not-found': this.renderNotFound
+                };
+                
+                // Handle browser navigation
+                window.addEventListener('popstate', () => this.handleRoute());
+                
+                // Handle link clicks
+                document.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'A' && e.target.href.startsWith(window.location.origin)) {
+                        e.preventDefault();
+                        const path = new URL(e.target.href).pathname;
+                        this.navigate(path);
+                    }
+                });
+                
+                // Initial route
+                this.handleRoute();
+            }
+            
+            navigate(path) {
+                window.history.pushState(null, '', path);
+                this.handleRoute();
+            }
+            
+            handleRoute() {
+                const path = window.location.pathname;
+                const search = window.location.search;
+                const outlet = document.getElementById('router-outlet');
+                
+                console.log('Routing to:', path, 'Query:', search);
+                
+                // Check if this is the not-found route with page parameter
+                if (path === '/not-found') {
+                    const params = new URLSearchParams(search);
+                    const originalPage = params.get('page');
+                    this.renderNotFound(outlet, originalPage);
+                    return;
+                }
+                
+                // Try to find a matching route
+                const routeHandler = this.routes[path];
+                if (routeHandler) {
+                    routeHandler(outlet);
+                } else {
+                    // In a real Angular app, this would navigate to /not-found?page=...
+                    // For this demo, we'll just show the not found page
+                    this.renderNotFound(outlet, path);
+                }
+            }
+            
+            renderHome(outlet) {
+                outlet.innerHTML = `
+                    <h2>Home Page</h2>
+                    <p>Welcome to the SPA demo application!</p>
+                    <p>This demonstrates how Spring Boot can serve an Angular SPA.</p>
+                `;
+            }
+            
+            renderAbout(outlet) {
+                outlet.innerHTML = `
+                    <h2>About Page</h2>
+                    <p>This is a client-side routed page.</p>
+                    <p>The server returns index.html for all routes, and JavaScript handles the routing.</p>
+                `;
+            }
+            
+            renderContact(outlet) {
+                outlet.innerHTML = `
+                    <h2>Contact Page</h2>
+                    <p>Contact us at: spa@example.com</p>
+                `;
+            }
+            
+            renderNotFound(outlet, originalPath) {
+                outlet.innerHTML = `
+                    <div class="error-page">
+                        <h2>404 - Page Not Found</h2>
+                        <p>The requested page was not found.</p>
+                        ${originalPath ? `<p>Original path: <code>${originalPath}</code></p>` : ''}
+                        <p><a href="/">Go to Home</a></p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize the router
+        const router = new SimpleRouter();
+        
+        // Log current location for debugging
+        console.log('SPA initialized at:', window.location.href);
+    </script>
+</body>
+</html>

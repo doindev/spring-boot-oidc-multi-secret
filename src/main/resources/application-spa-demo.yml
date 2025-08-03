@@ -1,0 +1,37 @@
+# Demo configuration for SPA mode
+# To test: Run with --spring.profiles.active=spa-demo
+
+security:
+  type: basic  # Use basic auth for simplicity in demo
+
+spa:
+  enabled: true
+  index-url: spa-index.html  # Using our demo SPA file
+  not-found-url: /not-found?page={notFoundUrl}
+  forward-api-requests: false
+  exclude-patterns:
+    - /api/**
+    - /actuator/**
+    - /oauth2/**
+    - /login/**
+    - /logout
+    - /error
+    - /favicon.ico
+    - /**/*.js
+    - /**/*.css
+    - /**/*.map
+    - /**/*.png
+    - /**/*.jpg
+    - /**/*.jpeg
+    - /**/*.gif
+    - /**/*.svg
+    - /**/*.ico
+    - /**/*.woff
+    - /**/*.woff2
+    - /**/*.ttf
+    - /**/*.eot
+
+logging:
+  level:
+    com.example.oidc.controller: DEBUG
+    com.example.oidc.config: DEBUG

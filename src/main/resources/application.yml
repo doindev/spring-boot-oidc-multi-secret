@@ -52,6 +52,32 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %logger{36} - %n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %-5level %logger{36} - %msg%n"
 
+# Single Page Application (SPA) configuration
+spa:
+  enabled: false  # Set to true to enable SPA mode
+  index-url: index.html  # Can be any filename like: spa-index.html, app.html, angular-app.html
+  not-found-url: /not-found?page={notFoundUrl}
+  forward-api-requests: false
+  exclude-patterns:
+    - /api/**
+    - /actuator/**
+    - /oauth2/**
+    - /login/**
+    - /logout
+    - /error
+    - /**/*.js
+    - /**/*.css
+    - /**/*.png
+    - /**/*.jpg
+    - /**/*.jpeg
+    - /**/*.gif
+    - /**/*.svg
+    - /**/*.ico
+    - /**/*.woff
+    - /**/*.woff2
+    - /**/*.ttf
+    - /**/*.eot
+
 # Microsoft Entra ID configuration (when security.type=entra)
 entra:
   tenant-id: your-azure-tenant-id
