@@ -1,0 +1,10 @@
+com\example\oidc\config\TestSecurityConfig.class
+com\example\oidc\filter\CorrelationIdFilterTest.class
+com\example\oidc\config\ClientRegistrationWithMultiSecretSupportTest.class
+com\example\oidc\config\SessionExpiryTest.class
+com\example\oidc\security\SecurityContextHelperTest.class
+com\example\oidc\config\TestSecurityConfig$1.class
+com\example\oidc\filter\CorrelationIdIntegrationTest.class
+com\example\oidc\security\ApiAuthenticationTest.class
+com\example\oidc\config\UsernameArgumentResolverTest.class
+com\example\oidc\config\ClientRegistrationRepositoryWithMultiSecretSupportTest.class

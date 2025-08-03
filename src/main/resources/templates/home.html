@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - OIDC Multi-Secret Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .user-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .user-info p {
+            margin: 10px 0;
+        }
+        .user-info strong {
+            display: inline-block;
+            width: 120px;
+        }
+        .logout-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+        .success-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 3px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="success-badge">Authenticated</span>
+        <h1>Welcome to the Protected Area</h1>
+        
+        <div class="user-info">
+            <h2>User Information</h2>
+            <p><strong>Username:</strong> <span th:text="${username}">N/A</span></p>
+            <p><strong>Email:</strong> <span th:text="${email}">N/A</span></p>
+            <p><strong>Full Name:</strong> <span th:text="${name}">N/A</span></p>
+        </div>
+        
+        <p>You have successfully authenticated using OIDC. The application is using automatic secret rotation to ensure continuous availability.</p>
+        
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

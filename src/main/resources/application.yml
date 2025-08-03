@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: oidc-multi-secret-demo
+  thymeleaf:
+    cache: false
+  session:
+    timeout: 30m  # 30 minutes inactivity timeout
+
+# Security configuration type
+# Options: oidc, basic, none
+security:
+  type: oidc
+
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: false  # Set to true in production with HTTPS
+        same-site: lax
+        max-age: 30m  # Cookie expires after 30 minutes
+
+app:
+  oidc:
+    issuer-uri: https://your-oidc-provider.com
+    client-id: your-client-id
+    client-secrets:
+      - your-first-secret
+      - your-second-secret
+      - your-third-secret
+    redirect-uri: http://localhost:8080/login/oauth2/code/oidc
+    scopes:
+      - openid
+      - profile
+      - email
+    secret-rotation-interval-ms: 60000  # 1 minute
+    authorization-uri: ${app.oidc.issuer-uri}/protocol/openid-connect/auth
+    token-uri: ${app.oidc.issuer-uri}/protocol/openid-connect/token
+    user-info-uri: ${app.oidc.issuer-uri}/protocol/openid-connect/userinfo
+    jwk-set-uri: ${app.oidc.issuer-uri}/protocol/openid-connect/certs
+    end-session-uri: ${app.oidc.issuer-uri}/protocol/openid-connect/logout
+    post-logout-redirect-uri: http://localhost:8080
+
+logging:
+  level:
+    com.example.oidc: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %logger{36} - %n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %-5level %logger{36} - %msg%n"
