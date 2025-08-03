@@ -1,5 +1,4 @@
 com\example\oidc\config\WebConfig.class
-com\example\oidc\OidcMultiSecretApplication.class
 com\example\oidc\util\RequestTrackingUtil.class
 com\example\oidc\controller\HomeController.class
 META-INF\spring-configuration-metadata.json
@@ -13,7 +12,6 @@ com\example\oidc\filter\TransactionContext.class
 com\example\oidc\config\RestTemplateConfig.class
 com\example\oidc\config\UsernameArgumentResolver.class
 com\example\oidc\security\SecurityContextHelper.class
-com\example\oidc\controller\SecurityInfoController.class
 com\example\oidc\config\OidcLogoutSuccessHandler.class
 com\example\oidc\config\ClientRegistrationRepositoryWithMultiSecretSupport.class
 com\example\oidc\config\OAuth2ClientConfig.class

@@ -17,7 +17,53 @@ When `security.type=oidc`, the application uses OpenID Connect authentication wi
 - Session management with 30-minute timeout
 - CORS and CSRF protection
 
-### 2. Basic Authentication
+### 2. Microsoft Entra ID (Azure AD)
+```yaml
+security:
+  type: entra
+```
+
+When `security.type=entra`, the application uses Microsoft Entra ID authentication with:
+- Support for Azure AD groups and app roles
+- Token refresh capability specific to Entra
+- Integration with Microsoft Graph API
+- Support for both OAuth2 login (web) and JWT resource server (API)
+- Tenant-specific configuration
+- Group and app role based authorization
+
+Configuration example:
+```yaml
+entra:
+  tenant-id: your-azure-tenant-id
+  allowed-groups: 
+    - group-id-1
+    - group-id-2
+  allowed-app-roles:
+    - Admin
+    - User
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          entra:
+            client-id: your-azure-app-client-id
+            client-secret: your-azure-app-client-secret
+            scope:
+              - openid
+              - profile
+              - email
+              - https://graph.microsoft.com/User.Read
+        provider:
+          entra:
+            issuer-uri: https://login.microsoftonline.com/${entra.tenant-id}/v2.0
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/${entra.tenant-id}/v2.0
+```
+
+### 3. Basic Authentication
 ```yaml
 security:
   type: basic
@@ -31,7 +77,7 @@ When `security.type=basic`, the application uses HTTP Basic authentication with:
 - Session management
 - API endpoints return 401 for unauthorized access
 
-### 3. No Security
+### 4. No Security
 ```yaml
 security:
   type: none
@@ -59,13 +105,23 @@ Each security configuration class is annotated with the appropriate condition, s
 
 ## Components Affected
 
-The following components are conditional on `security.type=oidc`:
+### OIDC Components (conditional on `security.type=oidc`):
 - `SecurityConfig` - Main OIDC security configuration
 - `OAuth2ClientConfig` - OAuth2 client components
 - `ClientRegistrationWithMultiSecretSupport` - Multi-secret support
 - `ClientRegistrationRepositoryWithMultiSecretSupport` - Secret rotation repository
 - `OidcLogoutSuccessHandler` - OIDC logout handler
 - `OidcTokenRefreshFilter` - Token refresh filter
+
+### Entra Components (conditional on `security.type=entra`):
+- `EntraSecurityConfig` - Main Entra security configuration
+- `EntraOAuth2ClientConfig` - Entra OAuth2 client components
+- `EntraTokenRefreshFilter` - Entra-specific token refresh
+- `EntraJwtAuthenticationConverter` - JWT claim extraction for Entra
+- `EntraOAuth2UserService` - OAuth2 user loading for Entra
+- `EntraOidcUserService` - OIDC user loading for Entra
+- `EntraCorrelationIdFilter` - Request tracking for Entra
+- `EntraTransactionContext` - Transaction context for Entra
 
 ## Checking Current Configuration
 
@@ -118,4 +174,8 @@ SECURITY_TYPE=none java -jar app.jar
 
 ## Note
 
-The correlation ID filter (`CorrelationIdFilter`) is always active regardless of the security type, ensuring request tracking works in all configurations.
+- For OIDC configuration: The correlation ID filter (`CorrelationIdFilter`) is always active
+- For Entra configuration: Uses its own `EntraCorrelationIdFilter` to avoid conflicts
+- For Basic/None configurations: The OIDC correlation filter remains active
+
+This ensures request tracking works in all configurations without component conflicts.

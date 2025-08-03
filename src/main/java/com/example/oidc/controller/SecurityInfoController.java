@@ -32,6 +32,22 @@ public class SecurityInfoController {
             info.put("principal", auth.getName());
             info.put("authorities", auth.getAuthorities());
             info.put("authenticationType", auth.getClass().getSimpleName());
+            
+            // Add Entra-specific info if applicable
+            if ("entra".equals(securityType)) {
+                Object principal = auth.getPrincipal();
+                if (principal instanceof org.springframework.security.oauth2.jwt.Jwt) {
+                    org.springframework.security.oauth2.jwt.Jwt jwt = (org.springframework.security.oauth2.jwt.Jwt) principal;
+                    info.put("tenantId", jwt.getClaimAsString("tid"));
+                    info.put("upn", jwt.getClaimAsString("upn"));
+                    info.put("appId", jwt.getClaimAsString("appid"));
+                } else if (principal instanceof org.springframework.security.oauth2.core.oidc.user.OidcUser) {
+                    org.springframework.security.oauth2.core.oidc.user.OidcUser oidcUser = 
+                        (org.springframework.security.oauth2.core.oidc.user.OidcUser) principal;
+                    info.put("tenantId", oidcUser.getClaimAsString("tid"));
+                    info.put("upn", oidcUser.getClaimAsString("upn"));
+                }
+            }
         } else {
             info.put("authenticated", false);
             info.put("principal", "anonymous");

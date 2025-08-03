@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * Handles Entra-specific claims like groups and app roles.
  */
 @Slf4j
-public class EntraJwtAuthenticationConverter extends JwtAuthenticationConverter {
+public class EntraJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
     
     private static final String GROUPS_CLAIM = "groups";
     private static final String ROLES_CLAIM = "roles";
@@ -31,14 +31,7 @@ public class EntraJwtAuthenticationConverter extends JwtAuthenticationConverter 
     
     private List<String> allowedGroups = new ArrayList<>();
     private List<String> allowedAppRoles = new ArrayList<>();
-    
-    public EntraJwtAuthenticationConverter() {
-        // Set custom authorities converter
-        setJwtGrantedAuthoritiesConverter(jwt -> extractAuthorities(jwt));
-        
-        // Set custom principal claim
-        setPrincipalClaimName(PREFERRED_USERNAME_CLAIM);
-    }
+    private String principalClaimName = PREFERRED_USERNAME_CLAIM;
     
     public void setAllowedGroups(List<String> allowedGroups) {
         this.allowedGroups = allowedGroups != null ? allowedGroups : new ArrayList<>();
@@ -46,6 +39,10 @@ public class EntraJwtAuthenticationConverter extends JwtAuthenticationConverter 
     
     public void setAllowedAppRoles(List<String> allowedAppRoles) {
         this.allowedAppRoles = allowedAppRoles != null ? allowedAppRoles : new ArrayList<>();
+    }
+    
+    public void setPrincipalClaimName(String principalClaimName) {
+        this.principalClaimName = principalClaimName;
     }
     
     @Override
@@ -97,16 +94,20 @@ public class EntraJwtAuthenticationConverter extends JwtAuthenticationConverter 
     }
     
     private String extractPrincipal(Jwt jwt) {
-        // Try preferred_username first, then upn, then email
-        String principal = jwt.getClaimAsString(PREFERRED_USERNAME_CLAIM);
+        // Use configured principal claim name
+        String principal = jwt.getClaimAsString(principalClaimName);
         if (principal == null) {
-            principal = jwt.getClaimAsString(UPN_CLAIM);
-        }
-        if (principal == null) {
-            principal = jwt.getClaimAsString("email");
-        }
-        if (principal == null) {
-            principal = jwt.getSubject();
+            // Fallback to other common claims
+            principal = jwt.getClaimAsString(PREFERRED_USERNAME_CLAIM);
+            if (principal == null) {
+                principal = jwt.getClaimAsString(UPN_CLAIM);
+            }
+            if (principal == null) {
+                principal = jwt.getClaimAsString("email");
+            }
+            if (principal == null) {
+                principal = jwt.getSubject();
+            }
         }
         return principal;
     }

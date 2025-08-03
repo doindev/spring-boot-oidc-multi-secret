@@ -7,7 +7,7 @@ spring:
     timeout: 30m  # 30 minutes inactivity timeout
 
 # Security configuration type
-# Options: oidc, basic, none
+# Options: oidc, basic, none, entra
 security:
   type: oidc
 
@@ -45,8 +45,47 @@ app:
 logging:
   level:
     com.example.oidc: DEBUG
+    com.example.entra: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %logger{36} - %n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [correlationId=%X{correlationId:-N/A}] [transactionId=%X{transactionId:-N/A}] %-5level %logger{36} - %msg%n"
+
+# Microsoft Entra ID configuration (when security.type=entra)
+entra:
+  tenant-id: your-azure-tenant-id
+  allowed-groups: []  # List of Azure AD group IDs that are allowed access
+  allowed-app-roles: []  # List of app roles that are allowed access
+
+# Spring OAuth2 configuration for Entra
+# Uncomment and configure when using security.type=entra
+#spring:
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          entra:
+#            client-id: your-azure-app-client-id
+#            client-secret: your-azure-app-client-secret
+#            scope:
+#              - openid
+#              - profile
+#              - email
+#              - https://graph.microsoft.com/User.Read
+#            authorization-grant-type: authorization_code
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            client-name: Microsoft Entra ID
+#        provider:
+#          entra:
+#            issuer-uri: https://login.microsoftonline.com/${entra.tenant-id}/v2.0
+#            authorization-uri: https://login.microsoftonline.com/${entra.tenant-id}/oauth2/v2.0/authorize
+#            token-uri: https://login.microsoftonline.com/${entra.tenant-id}/oauth2/v2.0/token
+#            user-info-uri: https://graph.microsoft.com/oidc/userinfo
+#            jwk-set-uri: https://login.microsoftonline.com/${entra.tenant-id}/discovery/v2.0/keys
+#            user-name-attribute: preferred_username
+#      resourceserver:
+#        jwt:
+#          issuer-uri: https://login.microsoftonline.com/${entra.tenant-id}/v2.0
+#          audiences:
+#            - your-azure-app-client-id
