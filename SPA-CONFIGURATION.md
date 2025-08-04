@@ -21,6 +21,7 @@ spa:
   enabled: true
   index-url: index.html  # Path to your SPA's index file (can be any name)
   not-found-url: /not-found?page={notFoundUrl}
+  use-redirect: false    # Use redirect instead of forward (default: false)
 ```
 
 ### Using Custom Index File Names
@@ -82,11 +83,19 @@ export class NotFoundComponent implements OnInit {
 
 ### Forward vs Redirect
 
-The implementation uses **forward** instead of redirect, which means:
+The implementation can use either **forward** or **redirect** based on the `use-redirect` configuration:
+
+#### Forward Mode (default, `use-redirect: false`):
 - The browser URL remains unchanged (shows the original path)
 - The server internally forwards the request to the not-found handler
 - The not-found handler returns the SPA's index.html
 - The SPA's router can read the original URL and handle routing
+
+#### Redirect Mode (`use-redirect: true`):
+- The browser URL changes to the not-found URL (e.g., `/not-found?page=/original/path`)
+- The server sends an HTTP redirect response
+- The browser makes a new request to the not-found URL
+- Useful when you want the URL to reflect the actual route handling
 
 ### Client-Side Behavior
 

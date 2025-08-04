@@ -38,6 +38,13 @@ public class SpaProperties {
     private boolean forwardApiRequests = false;
     
     /**
+     * Whether to use redirect instead of forward when handling 404 errors.
+     * When true, sends HTTP redirect to the not-found URL.
+     * When false, internally forwards the request (default behavior).
+     */
+    private boolean useRedirect = false;
+    
+    /**
      * Path patterns to exclude from SPA routing (will return normal 404).
      * Useful for static assets like images, CSS, JS files.
      */

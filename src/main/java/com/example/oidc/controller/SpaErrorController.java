@@ -59,19 +59,30 @@ public class SpaErrorController implements ErrorController {
                 
                 log.debug("Handling 404 for path: {} with SPA routing", originalPath);
                 
-                // Forward to the configured not-found URL with the original path
+                // Forward or redirect to the configured not-found URL with the original path
                 String notFoundUrl = spaProperties.getNotFoundUrl();
                 if (notFoundUrl != null && !notFoundUrl.isEmpty()) {
                     // Replace the placeholder with the actual path
-                    String forwardUrl = notFoundUrl.replace("{notFoundUrl}", originalPath);
-                    log.debug("Forwarding to: {}", forwardUrl);
+                    String targetUrl = notFoundUrl.replace("{notFoundUrl}", originalPath);
                     
-                    try {
-                        // Use forward instead of redirect to maintain the original URL in the browser
-                        request.getRequestDispatcher(forwardUrl).forward(request, response);
-                        return null;
-                    } catch (Exception e) {
-                        log.error("Failed to forward to not-found URL: {}", forwardUrl, e);
+                    if (spaProperties.isUseRedirect()) {
+                        // Use redirect - changes the URL in the browser
+                        log.debug("Redirecting to: {}", targetUrl);
+                        try {
+                            response.sendRedirect(targetUrl);
+                            return null;
+                        } catch (IOException e) {
+                            log.error("Failed to redirect to not-found URL: {}", targetUrl, e);
+                        }
+                    } else {
+                        // Use forward - maintains the original URL in the browser
+                        log.debug("Forwarding to: {}", targetUrl);
+                        try {
+                            request.getRequestDispatcher(targetUrl).forward(request, response);
+                            return null;
+                        } catch (Exception e) {
+                            log.error("Failed to forward to not-found URL: {}", targetUrl, e);
+                        }
                     }
                 }
                 

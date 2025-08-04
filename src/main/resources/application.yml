@@ -58,6 +58,7 @@ spa:
   index-url: index.html  # Can be any filename like: spa-index.html, app.html, angular-app.html
   not-found-url: /not-found?page={notFoundUrl}
   forward-api-requests: false
+  use-redirect: true  # Use redirect for SPA requests
   exclude-patterns:
     - /api/**
     - /actuator/**
